@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { PIPELINE, still } from '../content.js';
 import { easeInOut, lerp, pinProgress, range, useScrollFrame } from '../hooks.js';
-import { Check, Label, Reel } from './ui.jsx';
+import { Check, Reel, Tag } from './ui.jsx';
 
 /* "From your website": as you scroll, the photo, logo, colors and message lift off a business website, arc
    across, and drop into place on a phone. When everything has landed, the finished promo starts playing. */
@@ -17,7 +17,7 @@ function PieceArt({ id }) {
       return (
         <span className="flex h-full items-center gap-[8cqw] whitespace-nowrap">
           <span className="aspect-square h-[80%] rounded-full bg-[#e8b4b0] ring-[0.6cqw] ring-white" />
-          <span className="font-display text-[28cqw] italic leading-none">{site.name}</span>
+          <span className="text-[28cqw] font-semibold tracking-[-0.04em] leading-none">{site.name}</span>
         </span>
       );
     case 'colors':
@@ -29,7 +29,7 @@ function PieceArt({ id }) {
     default:
       return (
         <span className="flex h-full items-center rounded-[5cqw] bg-white px-[6cqw]">
-          <span className="font-display text-[9cqw] leading-[1.08] tracking-tight">{site.headline}</span>
+          <span className="text-[8.5cqw] font-medium leading-[1.1] tracking-[-0.03em]">{site.headline}</span>
         </span>
       );
   }
@@ -79,14 +79,14 @@ export default function Pipeline() {
         <div className="gutter mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           {/* words */}
           <div className="flex flex-col gap-5">
-            <Label dot="#9cc6ff">Made from your website</Label>
-            <h2 className="h2 !text-[clamp(2rem,4.4vw,3.9rem)]">Your website already has <em>everything we need.</em></h2>
+            <Tag>Made from your website</Tag>
+            <h2 className="h2 !text-[clamp(2rem,4.2vw,3.8rem)]">Your website already has <span className="soft">everything we need.</span></h2>
             <p className="lede hidden max-w-md sm:block">{PIPELINE.sub}</p>
             <ul className="flex flex-wrap gap-2 lg:mt-2">
               {PIPELINE.pieces.map((t, i) => (
                 <li key={t} ref={(el) => (ticks.current[i] = el)} data-on="false"
                   className="group flex items-center gap-2 rounded-full border border-line bg-white/60 py-1.5 pl-1.5 pr-3.5 text-sm text-ink-3 transition-colors duration-500 data-[on=true]:border-transparent data-[on=true]:bg-white data-[on=true]:text-ink">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-shell text-transparent transition-colors duration-500 group-data-[on=true]:bg-mint group-data-[on=true]:text-[#1d7a52]"><Check className="h-3 w-3" /></span>{t}
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-ground-2 text-transparent transition-colors duration-500 group-data-[on=true]:bg-ink group-data-[on=true]:text-white"><Check className="h-3 w-3" /></span>{t}
                 </li>
               ))}
             </ul>
@@ -95,8 +95,8 @@ export default function Pipeline() {
           {/* stage: website → phone */}
           <div ref={stage} className="relative flex items-center justify-between gap-4 sm:gap-8">
             {/* the website */}
-            <div className="card float-shadow w-[62%] overflow-hidden !rounded-2xl sm:w-[66%]">
-              <div className="flex items-center gap-2 border-b border-line bg-shell/60 px-3 py-2.5">
+            <div className="lift w-[62%] overflow-hidden rounded-2xl bg-white sm:w-[66%]">
+              <div className="flex items-center gap-2 border-b border-line bg-ground px-3 py-2.5">
                 <span className="flex gap-1">{[0, 1, 2].map((k) => <span key={k} className="h-2 w-2 rounded-full bg-ink/12" />)}</span>
                 <span className="ml-1 truncate rounded-full bg-white px-2.5 py-0.5 font-mono text-[10px] text-ink-3 sm:text-[11px]">{site.url}</span>
               </div>
@@ -130,7 +130,7 @@ export default function Pipeline() {
                 </div>
               </div>
               <p ref={ready} className="absolute -bottom-12 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[12px] opacity-0 shadow-sm sm:text-[13px]">
-                <span className="grid h-4 w-4 place-items-center rounded-full bg-mint text-[#1d7a52]"><Check className="h-2.5 w-2.5" /></span>Ready to post
+                <span className="grid h-4 w-4 place-items-center rounded-full bg-ink text-white"><Check className="h-2.5 w-2.5" /></span>Ready to post
               </p>
             </div>
 
