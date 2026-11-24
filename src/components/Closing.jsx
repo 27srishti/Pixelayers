@@ -6,7 +6,7 @@ import { SendMessage, Tag } from './ui.jsx';
 export default function Closing() {
   return (
     <>
-      <section className="px-2 sm:px-3">
+      <section data-tone="stone" className="px-2 pt-3 sm:px-3">
         <div className="relative overflow-hidden rounded-[2rem] bg-ink text-white sm:rounded-[2.5rem]">
           <Stream dark density={0.8} className="absolute inset-0 h-full w-full opacity-70" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_50%,#121212_0%,rgb(18_18_18/0.85)_50%,rgb(18_18_18/0)_100%)]" />

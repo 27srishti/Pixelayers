@@ -31,7 +31,7 @@ export default function Stream({ className = '', dark = false, density = 1, fly 
     });
 
     let W = 0, H = 0, dpr = 1, lanesN = 0, tiles = [];
-    const RATIOS = [16 / 9, 16 / 9, 1, 9 / 16, 5 / 4]; // height / width: vertical, square, wide, portrait
+    const RATIOS = [16 / 9, 16 / 9, 16 / 9, 9 / 16, 5 / 4]; // height / width: vertical, wide, and 4:5 image posts
     const pick = (t) => { t.vid = (Math.random() * IDS.length) | 0; t.img = t.vid * 5 + ((Math.random() * 5) | 0); t.ar = RATIOS[(Math.random() * RATIOS.length) | 0]; };
     const build = (lanes, perLane) => {
       tiles = [];

@@ -5,10 +5,11 @@ import { Tag } from './ui.jsx';
 export default function Faq() {
   const [open, setOpen] = useState(0);
   return (
-    <section id="faq" className="gutter py-24 sm:py-32">
+    <section id="faq" data-tone="stone" className="px-2 py-3 sm:px-3">
+      <div className="room gutter py-20 sm:py-28">
       <div className="wrap grid lg:grid-cols-2">
         <div className="flex flex-col items-start gap-6 pb-10 lg:sticky lg:top-24 lg:self-start lg:border-l lg:border-line lg:px-10">
-          <Tag className="reveal">Questions</Tag>
+          <Tag className="reveal"><span className="text-ink">05</span><span className="h-3 w-px bg-ink/20" />Questions</Tag>
           <h2 className="h2 reveal">Good <span className="soft">to know.</span></h2>
         </div>
         <ul className="reveal border-line lg:border-x lg:px-10">
@@ -30,6 +31,7 @@ export default function Faq() {
             );
           })}
         </ul>
+      </div>
       </div>
     </section>
   );

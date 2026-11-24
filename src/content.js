@@ -37,7 +37,6 @@ export const PIPELINE = {
   ],
   formats: [
     { id: '9:16', w: 9, h: 16, label: 'Reels, Stories, TikTok' },
-    { id: '1:1', w: 1, h: 1, label: 'Feed posts' },
     { id: '16:9', w: 16, h: 9, label: 'YouTube & your website' },
   ],
   site: { url: 'lumahairstudio.com' },
@@ -68,31 +67,69 @@ export const SAMPLES = [
   { id: 'giftshop', name: 'Sprucewick Gift Shop', kind: 'Gift shop', style: 'Animated', tone: 'lilac' },
 ];
 
+// Credit-based plans. 1 credit = 1 second of standard video.
 export const PRICING = {
-  lengths: [
-    { id: '30', label: '30-second videos' },
-    { id: '60', label: '60-second videos' },
-  ],
+  intro: 'Designed promo videos and image posts, built from your own website, photos and reviews.',
   plans: [
-    { id: 'first', title: 'First month', tag: 'Introductory price', price: { 30: 30, 60: 45 }, featured: true },
-    { id: 'regular', title: 'From the second month', tag: 'Regular monthly price', price: { 30: 60, 60: 90 } },
+    {
+      id: 'starter', name: 'Starter', price: 30, priceNote: 'first month', then: 59, credits: 450,
+      makes: [
+        { label: 'Standard video', value: '7 min 30 s', share: 1 },
+        { label: 'AI presenter', value: '1 min 52 s', share: 0.25 },
+        { label: 'AI cinematic footage', value: '1 min 52 s', share: 0.25 },
+        { label: 'Image posts', value: '90 posts', share: 1, dashed: true },
+      ],
+      perks: ['Up to 90 s per video', '9:16 or 16:9', '5 revision rounds', 'Cancel anytime'],
+    },
+    {
+      id: 'growth', name: 'Growth', price: 99, badge: 'Best value', credits: 900, featured: true,
+      makes: [
+        { label: 'Standard video', value: '15 min', share: 1 },
+        { label: 'AI presenter', value: '3 min 45 s', share: 0.25 },
+        { label: 'AI cinematic footage', value: '3 min 45 s', share: 0.25 },
+        { label: 'Image posts', value: '180 posts', share: 1, dashed: true },
+      ],
+      perks: ['Everything in Starter', 'Both 9:16 and 16:9', 'Priority queue', '1-month rollover'],
+    },
   ],
-  included: [
-    '10 ready-to-post promo videos every month',
-    'Made from your links, photos or clips',
-    'Vertical, square or wide, sized for wherever you post',
-    'Original music and on-screen captions',
-    'Planning, design and animation by our team',
+  topUp: { credits: 250, price: 35, text: 'Add any month, on either plan.', strong: 'Never expires.', note: 'Up to 4 min 10 s of standard video.' },
+  everyPlan: [
+    { title: 'Video and post ideas', text: 'Fresh ideas for you every month' },
+    { title: 'Content planning', text: 'A monthly plan for your socials' },
+    { title: 'Social integration', text: 'Connect and post automatically' },
+    { title: 'Your face and voice', text: 'Cloned for your AI presenter' },
+    { title: 'Your material', text: 'Built from your photos and reviews' },
+    { title: 'Voice and motion', text: 'Voiceover, music, motion graphics' },
   ],
-  note: 'Prices are in US dollars, per month, for 10 videos. 60-second videos cost 50% more.',
+  rates: [
+    { n: 1, unit: 'sec', title: 'Standard video', text: 'Motion graphics, voiceover and music' },
+    { n: 4, unit: 'sec', title: 'AI presenter', text: 'Your cloned face and voice, or a stock presenter' },
+    { n: 4, unit: 'sec', title: 'AI cinematic footage', text: 'Generated scenes of your work' },
+    { n: 5, unit: 'post', title: 'Image post', text: 'A designed post for your feed' },
+  ],
+  // bars are drawn in seconds (light = standard, dark = AI); the number is credits
+  costs: [
+    { label: 'Image post', std: 3, ai: 0, credits: 5 },
+    { label: '30 s Reel', std: 30, ai: 0, credits: 30 },
+    { label: '60 s brand film', std: 60, ai: 0, credits: 60 },
+    { label: '30 s Reel, 15 s presenter', std: 15, ai: 15, credits: 75 },
+    { label: '30 s Reel, 12 s AI footage', std: 18, ai: 12, credits: 66 },
+  ],
+  goodToKnow: [
+    { title: 'Revisions', text: 'Five rounds per video, free.' },
+    { title: 'Unused credits', text: 'Starter resets monthly. Growth rolls over one month.' },
+    { title: 'Top-ups', text: '250 credits for $35. They never expire.' },
+    { title: 'Change or cancel', text: 'Anytime, from your next billing month.' },
+  ],
 };
 
 export const FAQ = [
   { q: 'Is the preview really free?', a: 'Yes. There’s no cost and no commitment. You see a 30-second promo for your own business before you decide anything.' },
   { q: 'What do you need from me?', a: 'Your business name and whatever you have: a website, an Instagram or Facebook page, some photos or short phone clips.' },
   { q: 'Do I need a website?', a: 'No. A social page, a few photos or some phone clips are enough.' },
-  { q: 'Are the videos only vertical?', a: 'No. We make vertical videos for Reels, Stories and TikTok, square ones for feed posts, and wide ones for YouTube or your website.' },
+  { q: 'Are the videos only vertical?', a: 'No. We make vertical 9:16 videos for Reels, Stories and TikTok, and wide 16:9 ones for YouTube or your website. Starter includes one format, Growth includes both. Plans also include designed image posts for your feed.' },
+  { q: 'How do credits work?', a: 'One credit is one second of standard video. AI presenter and AI cinematic footage use 4 credits a second, and an image post uses 5. You can mix them in one video; only the AI seconds count at the higher rate.' },
   { q: 'Do I need to film anything?', a: 'No. We work with what you already have.' },
   { q: 'Do I need to learn any software?', a: 'No. Pixelayers is a service, not an app. Our team handles everything for you.' },
-  { q: 'What happens after the preview?', a: 'If you love it, pick a plan in the chat and we send the full version without the watermark. Your plan includes 10 ready-to-post videos every month.' },
+  { q: 'What happens after the preview?', a: 'If you love it, pick a plan in the chat and we send the full version without the watermark. Plans start at $30 for your first month.' },
 ];

@@ -1,3 +1,4 @@
+import Backdrop from './components/Backdrop.jsx';
 import Nav from './components/Nav.jsx';
 import Hero from './components/Hero.jsx';
 import Pipeline from './components/Pipeline.jsx';
@@ -13,6 +14,7 @@ export default function App() {
   useScrollReveal();
   return (
     <>
+      <Backdrop />
       <Nav />
       <main>
         <Hero />

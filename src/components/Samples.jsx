@@ -5,7 +5,6 @@ import { Reel, SectionHead } from './ui.jsx';
 
 /* The samples gallery: the section pins, and scrolling down glides a row of large reels sideways. The reel nearest
    the middle of the screen comes into focus (full size, full colour); the others sit back slightly. */
-const TONE = { peach: '#ffe1d2', butter: '#fff0c6', mint: '#d9f0e4', sky: '#d9e8ff', lilac: '#e6defd' };
 
 export default function Samples() {
   const sec = useRef(null), row = useRef(null), view = useRef(null), cards = useRef([]), bar = useRef(null);
@@ -39,15 +38,16 @@ export default function Samples() {
   });
 
   return (
-    <section ref={sec} id="samples" className="relative h-[300svh]">
-      <div className="sticky top-0 flex h-svh min-h-[640px] flex-col justify-center gap-8 overflow-hidden pt-16 sm:gap-10">
-        <SectionHead className="gutter w-full" tag="Samples" title={<>Every business gets <span className="soft">its own look.</span></>}
+    <section ref={sec} id="samples" data-tone="stone" className="relative h-[300svh]">
+      <div className="sticky top-0 h-svh min-h-[640px] px-2 pb-2 pt-[4.5rem] sm:px-3 sm:pb-3">
+      <div className="room flex h-full flex-col justify-center gap-8 overflow-hidden sm:gap-10">
+        <SectionHead className="gutter w-full" tag={<><span className="text-ink">03</span><span className="h-3 w-px bg-ink/20" />Samples</>} title={<>Every business gets <span className="soft">its own look.</span></>}
           note="Two styles: photo-based, made from your own photos, and animated, for when you don’t have many." />
         <div ref={view} className="relative">
           <ul ref={row} className="flex w-max items-end gap-5 px-[calc(50vw-min(31vw,14.5svh)-0.5rem)] will-change-transform sm:gap-8">
             {SAMPLES.map((s, i) => (
               <li key={s.id} ref={(el) => (cards.current[i] = el)} className="w-[min(62vw,29svh)] shrink-0 origin-bottom will-change-transform">
-                <div className="rounded-[1.9rem] p-2" style={{ background: TONE[s.tone] }}>
+                <div className="glass rounded-[1.9rem] p-2">
                   <Reel id={s.id} label={`Concept sample for ${s.name}`} rounded="rounded-[1.4rem]" />
                 </div>
                 <div className="px-1 pt-4">
@@ -62,6 +62,7 @@ export default function Samples() {
           <span className="relative h-px flex-1 bg-line"><span ref={bar} className="absolute inset-0 origin-left scale-x-[0.04] bg-ink" /></span>
           <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">Concept samples · fictional businesses</span>
         </div>
+      </div>
       </div>
     </section>
   );

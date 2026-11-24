@@ -22,13 +22,13 @@ export default function Hero() {
   });
 
   return (
-    <section id="top">
+    <section id="top" data-tone="cream">
       <div ref={sec} className="relative h-[165svh]">
         <div className="sticky top-0 h-svh min-h-[620px] overflow-hidden">
           <Stream className="animate-rise absolute inset-0 h-full w-full" fly={() => progress.current} />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ground to-transparent" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#f2f0eb]/70 to-transparent" />
           {/* quiet zone behind the words */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_40%_at_50%_50%,#f3f2ee_0%,rgb(243_242_238/0.9)_50%,rgb(243_242_238/0)_100%)] sm:bg-[radial-gradient(ellipse_42%_38%_at_50%_48%,#f3f2ee_0%,rgb(243_242_238/0.9)_48%,rgb(243_242_238/0)_100%)]" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_40%_at_50%_50%,rgb(244_242_238/0.92)_0%,rgb(244_242_238/0.75)_50%,rgb(244_242_238/0)_100%)] sm:bg-[radial-gradient(ellipse_42%_38%_at_50%_48%,rgb(244_242_238/0.9)_0%,rgb(244_242_238/0.7)_48%,rgb(244_242_238/0)_100%)]" />
 
           <div ref={copy} className="gutter relative z-10 flex h-full flex-col items-center justify-center pt-16 text-center will-change-transform">
             <span className="animate-rise frosted inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] text-ink-2">
