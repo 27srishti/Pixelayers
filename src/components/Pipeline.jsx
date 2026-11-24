@@ -1,148 +1,151 @@
 import { useRef } from 'react';
 import { PIPELINE, still } from '../content.js';
-import { easeInOut, lerp, pinProgress, range, useScrollFrame } from '../hooks.js';
+import { clamp, ease, easeInOut, lerp, pinProgress, range, useScrollFrame } from '../hooks.js';
 import { Check, Reel, Tag } from './ui.jsx';
 
-/* "From your website": as you scroll, the photo, logo, colors and message lift off a business website, arc
-   across, and drop into place on a phone. When everything has landed, the finished promo starts playing. */
-const PIECES = ['photo', 'logo', 'colors', 'message'];
-const SWATCHES = ['#e8b4b0', '#3a3433', '#f3ece4'];
-const { site } = PIPELINE;
+/* "Send us whatever you have". The section pins. As you scroll, each input (website, Instagram, Facebook, photos,
+   clips) sends a token arcing into the empty frame on the right; once everything has landed, the finished promo
+   starts playing. Scrolling on reshapes the same video from vertical to square to wide. */
+const { sources: SOURCES, formats: FORMATS } = PIPELINE;
+const TONE = ['#d9e8ff', '#e6defd', '#d9e8ff', '#ffe1d2', '#d9f0e4'];
 
-function PieceArt({ id }) {
-  switch (id) {
-    case 'photo':
-      return <img src={still('salon-bowls')} alt="" className="h-full w-full object-cover object-[50%_78%]" />;
-    case 'logo':
-      return (
-        <span className="flex h-full items-center gap-[8cqw] whitespace-nowrap">
-          <span className="aspect-square h-[80%] rounded-full bg-[#e8b4b0] ring-[0.6cqw] ring-white" />
-          <span className="text-[28cqw] font-semibold tracking-[-0.04em] leading-none">{site.name}</span>
-        </span>
-      );
-    case 'colors':
-      return (
-        <span className="flex h-full items-center gap-[6cqw]">
-          {SWATCHES.map((c) => <span key={c} className="aspect-square h-full rounded-full ring-[1.5cqw] ring-white" style={{ background: c }} />)}
-        </span>
-      );
-    default:
-      return (
-        <span className="flex h-full items-center rounded-[5cqw] bg-white px-[6cqw]">
-          <span className="text-[8.5cqw] font-medium leading-[1.1] tracking-[-0.03em]">{site.headline}</span>
-        </span>
-      );
-  }
+function Icon({ id }) {
+  const stroke = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  if (id === 'web') return <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" /></svg>;
+  if (id === 'insta') return <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" /></svg>;
+  if (id === 'fb') return <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}><circle cx="12" cy="12" r="9" /><path d="M13.5 21v-7h2.5l.4-3h-2.9V9.3c0-.9.3-1.5 1.6-1.5h1.4V5.2a17 17 0 0 0-2.1-.1c-2.1 0-3.5 1.3-3.5 3.6V11H8.5v3h2.4v7" /></svg>;
+  if (id === 'photos') return <img src={still('salon-bowls')} alt="" className="h-full w-full object-cover" />;
+  return (
+    <span className="relative block h-full w-full">
+      <img src={still('kitchen-bath')} alt="" className="h-full w-full object-cover" />
+      <span className="absolute inset-0 grid place-items-center bg-black/20"><svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-white" fill="currentColor"><path d="M8 5v14l11-7z" /></svg></span>
+    </span>
+  );
 }
 
-/** An empty dashed placeholder that marks where a piece came from or is going. */
-const Slot = ({ slot, className = '' }) => <div data-slot={slot} className={`slot rounded-xl border border-dashed border-ink/15 transition-opacity duration-300 ${className}`} />;
+const IconBox = ({ i, id, className = '' }) => (
+  <span className={`grid shrink-0 place-items-center overflow-hidden rounded-xl text-ink ${className}`} style={{ background: TONE[i] }}><Icon id={id} /></span>
+);
+
+function Ratio({ w, h }) {
+  const s = 14 / Math.max(w, h);
+  return <span className="inline-block rounded-[3px] border-[1.5px] border-current" style={{ width: w * s, height: h * s }} />;
+}
 
 export default function Pipeline() {
-  const sec = useRef(null), stage = useRef(null), fly = useRef([]), ticks = useRef([]);
-  const video = useRef(null), ready = useRef(null);
+  const sec = useRef(null), stage = useRef(null), box = useRef(null), frame = useRef(null);
+  const icons = useRef([]), cards = useRef([]), tokens = useRef([]), pills = useRef([]);
+  const video = useRef(null), empty = useRef(null), count = useRef(null);
 
   useScrollFrame((vh) => {
-    if (!sec.current || !stage.current) return;
+    if (!sec.current || !stage.current || !box.current || !frame.current) return;
     const p = pinProgress(sec.current, vh);
-    const s = stage.current.getBoundingClientRect();
-    const done = range(p, 0.84, 0.93);
-    PIECES.forEach((id, i) => {
-      const el = fly.current[i];
-      const src = stage.current.querySelector(`[data-slot="${id}-src"]`);
-      const dst = stage.current.querySelector(`[data-slot="${id}-dst"]`);
-      if (!el || !src || !dst) return;
-      const a = src.getBoundingClientRect(), b = dst.getBoundingClientRect();
-      const t = easeInOut(range(p, 0.1 + i * 0.13, 0.4 + i * 0.13));
-      src.style.opacity = t > 0.02 ? '1' : '0'; // outline shows only once the piece has left
-      dst.style.opacity = t < 0.98 ? '1' : '0';
+    const S = stage.current.getBoundingClientRect();
+
+    // the frame: fit the current aspect ratio into its box
+    const m = range(p, 0.58, 0.96) * 2;
+    const seg = Math.min(1, Math.floor(m));
+    const local = easeInOut(range(m - seg, 0.25, 0.85));
+    const A = FORMATS.map((f) => f.w / f.h);
+    const a = lerp(A[seg], A[seg + 1], local);
+    const B = box.current.getBoundingClientRect();
+    const w = B.width / B.height > a ? B.height * a : B.width;
+    frame.current.style.width = `${w}px`;
+    frame.current.style.height = `${w / a}px`;
+    const active = Math.round(seg + local);
+    pills.current.forEach((el, i) => el && (el.dataset.on = i === active));
+
+    // the tokens: icon → frame centre, along an arc
+    const F = frame.current.getBoundingClientRect();
+    let landed = 0;
+    SOURCES.forEach((src, i) => {
+      const tok = tokens.current[i];
+      const ic = [icons.current[i], icons.current[SOURCES.length + i]].find((el) => el && el.offsetParent);
+      if (!tok || !ic) return;
+      const I = ic.getBoundingClientRect();
+      const t = easeInOut(range(p, 0.05 + i * 0.08, 0.25 + i * 0.08));
+      const x0 = I.left + I.width / 2 - S.left, y0 = I.top + I.height / 2 - S.top;
+      const x1 = F.left + F.width / 2 - S.left, y1 = F.top + F.height / 2 - S.top;
       const arc = Math.sin(t * Math.PI);
-      el.style.left = `${lerp(a.left, b.left, t) - s.left}px`;
-      el.style.top = `${lerp(a.top, b.top, t) - s.top}px`;
-      el.style.width = `${lerp(a.width, b.width, t)}px`;
-      el.style.height = `${lerp(a.height, b.height, t)}px`;
-      el.style.transform = `translate3d(0,${(-arc * 60).toFixed(1)}px,0) rotate(${(-arc * 5).toFixed(2)}deg) scale(${1 + arc * 0.06})`;
-      el.style.boxShadow = `0 ${arc * 30}px ${arc * 60}px -20px rgb(27 24 36 / ${0.35 * arc})`;
-      el.style.opacity = String(1 - done);
-      if (ticks.current[i]) ticks.current[i].dataset.on = t > 0.98;
+      const x = lerp(x0, x1, t), y = lerp(y0, y1, t) - arc * 90;
+      const s = 1 + arc * 0.25 - (t > 0.85 ? (t - 0.85) * 4 : 0);
+      tok.style.transform = `translate3d(${(x - 22).toFixed(1)}px,${(y - 22).toFixed(1)}px,0) scale(${s.toFixed(3)})`;
+      tok.style.opacity = t > 0.01 && t < 0.99 ? '1' : '0';
+      if (t >= 0.99) landed++;
+      [cards.current[i], cards.current[SOURCES.length + i]].forEach((c) => c && (c.dataset.on = t >= 0.99));
     });
+    if (count.current) count.current.textContent = `${landed} of ${SOURCES.length} added`;
+    const done = ease(range(p, 0.5, 0.58));
     if (video.current) video.current.style.opacity = String(done);
-    if (ready.current) {
-      ready.current.style.opacity = String(done);
-      ready.current.style.transform = `translate3d(-50%,${(1 - done) * 12}px,0)`;
-    }
+    if (empty.current) empty.current.style.opacity = String(clamp(1 - done));
   });
 
   return (
-    <section ref={sec} className="relative h-[300svh]">
-      <div className="sticky top-0 flex h-svh min-h-[640px] flex-col justify-center overflow-hidden pt-16">
-        <div className="gutter mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          {/* words */}
-          <div className="flex flex-col gap-5">
-            <Tag>Made from your website</Tag>
-            <h2 className="h2 !text-[clamp(2rem,4.2vw,3.8rem)]">Your website already has <span className="soft">everything we need.</span></h2>
+    <section ref={sec} id="send" className="relative h-[400svh]">
+      <div ref={stage} className="sticky top-0 flex h-svh min-h-[680px] flex-col justify-center overflow-hidden pb-6 pt-20">
+        <div className="gutter wrap grid w-full items-center gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+          {/* words + inputs */}
+          <div className="flex flex-col items-start gap-5 lg:gap-6">
+            <Tag>What to send</Tag>
+            <h2 className="h2 !text-[clamp(2.1rem,4.4vw,4rem)]">Send us <span className="soft">whatever you have.</span></h2>
             <p className="lede hidden max-w-md sm:block">{PIPELINE.sub}</p>
-            <ul className="flex flex-wrap gap-2 lg:mt-2">
-              {PIPELINE.pieces.map((t, i) => (
-                <li key={t} ref={(el) => (ticks.current[i] = el)} data-on="false"
-                  className="group flex items-center gap-2 rounded-full border border-line bg-white/60 py-1.5 pl-1.5 pr-3.5 text-sm text-ink-3 transition-colors duration-500 data-[on=true]:border-transparent data-[on=true]:bg-white data-[on=true]:text-ink">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-ground-2 text-transparent transition-colors duration-500 group-data-[on=true]:bg-ink group-data-[on=true]:text-white"><Check className="h-3 w-3" /></span>{t}
+
+            {/* large screens: a list of input cards */}
+            <ul className="hidden w-full max-w-md flex-col gap-2 lg:flex">
+              {SOURCES.map((s, i) => (
+                <li key={s.id} ref={(el) => (cards.current[i] = el)} data-on="false"
+                  className="group flex items-center gap-4 rounded-2xl border border-line bg-white/60 p-2.5 pr-4 transition-colors duration-500 data-[on=true]:border-transparent data-[on=true]:bg-white">
+                  <span ref={(el) => (icons.current[i] = el)}><IconBox i={i} id={s.id} className="h-11 w-11" /></span>
+                  <span className="flex-1 leading-tight">
+                    <span className="block font-medium">{s.label}</span>
+                    <span className="font-mono text-[12px] text-ink-3">{s.detail}</span>
+                  </span>
+                  <span className="grid h-6 w-6 place-items-center rounded-full border border-line text-transparent transition-colors duration-500 group-data-[on=true]:border-ink group-data-[on=true]:bg-ink group-data-[on=true]:text-white"><Check className="h-3 w-3" /></span>
+                </li>
+              ))}
+            </ul>
+            {/* phones and tablets: compact chips */}
+            <ul className="flex flex-wrap gap-1.5 lg:hidden">
+              {SOURCES.map((s, i) => (
+                <li key={s.id} ref={(el) => (cards.current[SOURCES.length + i] = el)} data-on="false"
+                  className="flex items-center gap-2 rounded-full border border-line bg-white/60 py-1 pl-1 pr-3 text-[13px] transition-colors duration-500 data-[on=true]:border-ink data-[on=true]:bg-white">
+                  <span ref={(el) => (icons.current[SOURCES.length + i] = el)}><IconBox i={i} id={s.id} className="h-7 w-7 !rounded-full [&_svg]:h-4 [&_svg]:w-4" /></span>{s.label}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* stage: website → phone */}
-          <div ref={stage} className="relative flex items-center justify-between gap-4 sm:gap-8">
-            {/* the website */}
-            <div className="lift w-[62%] overflow-hidden rounded-2xl bg-white sm:w-[66%]">
-              <div className="flex items-center gap-2 border-b border-line bg-ground px-3 py-2.5">
-                <span className="flex gap-1">{[0, 1, 2].map((k) => <span key={k} className="h-2 w-2 rounded-full bg-ink/12" />)}</span>
-                <span className="ml-1 truncate rounded-full bg-white px-2.5 py-0.5 font-mono text-[10px] text-ink-3 sm:text-[11px]">{site.url}</span>
-              </div>
-              <div className="flex flex-col gap-3 p-3 sm:gap-5 sm:p-5">
-                <div className="flex items-center justify-between">
-                  <Slot slot="logo-src" className="h-5 w-16 sm:h-7 sm:w-24" />
-                  <span className="hidden gap-3 text-[10px] text-ink-3 sm:flex"><span>Services</span><span>Team</span><span>Book</span></span>
+          {/* the video: fills up, then reshapes */}
+          <div className="flex flex-col items-center gap-5">
+            <div ref={box} className="relative grid h-[min(38svh,22rem)] w-full place-items-center sm:h-[min(52svh,30rem)] lg:h-[min(60svh,34rem)]">
+              <div ref={frame} className="relative overflow-hidden rounded-[1.5rem] bg-white shadow-[0_0_0_1px_rgb(18_18_18/0.08),0_40px_90px_-40px_rgb(18_18_18/0.45)]">
+                <div ref={empty} className="absolute inset-2 flex flex-col items-center justify-center gap-2 rounded-[1.1rem] border border-dashed border-ink/20 text-center">
+                  <span className="text-sm font-medium">Your promo</span>
+                  <span ref={count} className="font-mono text-[11px] text-ink-3">0 of 5 added</span>
                 </div>
-                <div className="grid grid-cols-[1fr_1fr] items-center gap-3 sm:gap-5">
-                  <div className="flex flex-col gap-2 sm:gap-3">
-                    <Slot slot="message-src" className="h-12 w-full sm:h-[4.6rem]" />
-                    <span className="w-fit rounded-full bg-ink px-2.5 py-1 text-[9px] text-white sm:text-[11px]">Book a visit</span>
-                    <Slot slot="colors-src" className="h-4 w-14 sm:h-6 sm:w-20" />
-                  </div>
-                  <Slot slot="photo-src" className="aspect-[4/5] w-full" />
+                <div ref={video} className="absolute inset-0 opacity-0">
+                  <Reel id="salon" label="Concept sample: the finished promo" rounded="rounded-none" className="!aspect-auto h-full" pos="50% 62%" />
                 </div>
               </div>
             </div>
-
-            {/* the phone */}
-            <div className="relative w-[34%] max-w-[15rem] sm:w-[30%]">
-              <div className="phone !rounded-[1.9rem] !p-1.5 sm:!rounded-[2.4rem] sm:!p-2">
-                <div className="phone-screen !rounded-[1.5rem] bg-[#f3ece4] sm:!rounded-[1.95rem]">
-                  <Slot slot="photo-dst" className="absolute inset-x-0 top-0 h-[64%] !rounded-none border-0" />
-                  <Slot slot="logo-dst" className="absolute left-[8%] top-[5%] h-[5%] w-[38%] border-0" />
-                  <Slot slot="message-dst" className="absolute inset-x-[6%] bottom-[13%] h-[17%]" />
-                  <Slot slot="colors-dst" className="absolute bottom-[5%] left-[8%] h-[4%] w-[28%]" />
-                  <div ref={video} className="absolute inset-0 opacity-0">
-                    <Reel id="salon" label="Concept sample: the finished promo" rounded="rounded-none" className="!aspect-auto h-full" />
-                  </div>
-                </div>
-              </div>
-              <p ref={ready} className="absolute -bottom-12 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[12px] opacity-0 shadow-sm sm:text-[13px]">
-                <span className="grid h-4 w-4 place-items-center rounded-full bg-ink text-white"><Check className="h-2.5 w-2.5" /></span>Ready to post
-              </p>
-            </div>
-
-            {/* the pieces in flight */}
-            <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-              {PIECES.map((id, i) => (
-                <div key={id} ref={(el) => (fly.current[i] = el)} className={`absolute overflow-hidden will-change-transform [container-type:inline-size] ${id === 'photo' ? 'rounded-xl' : ''}`}>
-                  <PieceArt id={id} />
-                </div>
+            <ul className="flex flex-wrap justify-center gap-1.5">
+              {FORMATS.map((f, i) => (
+                <li key={f.id} ref={(el) => (pills.current[i] = el)} data-on={i === 0}
+                  className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[13px] text-ink-3 transition-colors duration-500 data-[on=true]:border-ink data-[on=true]:bg-ink data-[on=true]:text-white">
+                  <Ratio w={f.w} h={f.h} /><span className="font-mono text-[11px]">{f.id}</span><span className="hidden sm:inline">{f.label}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
+        </div>
+
+        {/* tokens in flight */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          {SOURCES.map((s, i) => (
+            <span key={s.id} ref={(el) => (tokens.current[i] = el)} className="absolute left-0 top-0 opacity-0 will-change-transform">
+              <IconBox i={i} id={s.id} className="h-11 w-11 shadow-[0_14px_30px_-12px_rgb(18_18_18/0.45)] ring-2 ring-white" />
+            </span>
+          ))}
         </div>
       </div>
     </section>

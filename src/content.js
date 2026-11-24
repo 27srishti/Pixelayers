@@ -11,8 +11,8 @@ export const LINKS = {
 };
 
 export const NAV = [
-  { href: '#why', label: 'Why video' },
   { href: '#how', label: 'How it works' },
+  { href: '#send', label: 'What to send' },
   { href: '#samples', label: 'Samples' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#faq', label: 'FAQ' },
@@ -21,21 +21,26 @@ export const NAV = [
 export const HERO = {
   badge: 'Free 30-second preview for your business',
   title: ['Promo videos', 'people', 'actually watch.'],
-  sub: 'Most small businesses post shaky phone clips that get scrolled past. We turn your website into polished, animated promo videos for Reels, Stories and your feed.',
+  sub: 'Most small businesses post shaky phone clips that get scrolled past. Send us a link, a few photos or some clips, and we turn them into polished, animated promo videos.',
 };
 
-// "Why video": the scroll wipes from the left column to the right one.
-export const BEFORE_AFTER = {
-  before: { label: 'What most shops post', title: 'Shaky phone clips get scrolled past.', notes: ['Handheld and shaky', 'Dim, cluttered shots', 'No clear message'] },
-  after: { label: 'What we make', title: 'Animated promos stop the scroll.', notes: ['Your logo and colors', 'Clear on-screen captions', 'Original music'] },
-};
-
-// "From your website": the pieces lifted off a site and placed into the video.
+// "Send us whatever you have": the inputs fly into one video, which then reshapes into each format.
 export const PIPELINE = {
-  title: 'Your website already has everything we need.',
-  sub: 'Your photos, logo and colors are all on your website. We take it from there, so there’s nothing to film and nothing to edit.',
-  pieces: ['Your photos', 'Your logo', 'Your colors', 'Your message'],
-  site: { name: 'Luma', full: 'Luma Hair Studio', url: 'lumahairstudio.com', headline: 'Colour, cut & care in the heart of town.' },
+  title: 'Send us whatever you have.',
+  sub: 'A website, an Instagram or Facebook page, a few photos or some phone clips. Any one of them is enough. Nothing to film, nothing to edit.',
+  sources: [
+    { id: 'web', label: 'Website', detail: 'lumahairstudio.com' },
+    { id: 'insta', label: 'Instagram', detail: '@lumahairstudio' },
+    { id: 'fb', label: 'Facebook page', detail: 'Luma Hair Studio' },
+    { id: 'photos', label: 'Photos', detail: 'From your camera roll' },
+    { id: 'clips', label: 'Phone clips', detail: 'Even shaky ones' },
+  ],
+  formats: [
+    { id: '9:16', w: 9, h: 16, label: 'Reels, Stories, TikTok' },
+    { id: '1:1', w: 1, h: 1, label: 'Feed posts' },
+    { id: '16:9', w: 16, h: 9, label: 'YouTube & your website' },
+  ],
+  site: { url: 'lumahairstudio.com' },
 };
 
 export const BUSINESS_TYPES = ['Cafés', 'Salons', 'Boutiques', 'Bakeries', 'Med spas', 'Gyms', 'Florists', 'Gift shops', 'Remodelers', 'Local services'];
@@ -43,8 +48,9 @@ export const BUSINESS_TYPES = ['Cafés', 'Salons', 'Boutiques', 'Bakeries', 'Med
 // The free preview, in three steps (matches the Instagram carousel).
 export const STEPS = [
   { title: 'Tap Send message', text: 'It opens a chat with us on Instagram.', tone: 'lilac' },
-  { title: 'Share your website', text: 'We use your photos, logo and colors.', tone: 'peach' },
+  { title: 'Share what you have', text: 'A website, a social page, photos or clips. Whatever you have.', tone: 'peach' },
   { title: 'Get your free preview', text: 'A 30-second promo in the same chat, with our watermark.', tone: 'mint' },
+  { title: 'Love it? Keep it.', text: 'Pick a plan in the chat and we send the full version, without the watermark.', tone: 'sky' },
 ];
 
 export const KEEP_IT = {
@@ -73,8 +79,8 @@ export const PRICING = {
   ],
   included: [
     '10 ready-to-post promo videos every month',
-    'Made from your website, photos and logo',
-    'Sized for Reels, Stories and posts, with a feed cover',
+    'Made from your links, photos or clips',
+    'Vertical, square or wide, sized for wherever you post',
     'Original music and on-screen captions',
     'Planning, design and animation by our team',
   ],
@@ -83,8 +89,9 @@ export const PRICING = {
 
 export const FAQ = [
   { q: 'Is the preview really free?', a: 'Yes. There’s no cost and no commitment. You see a 30-second promo for your own business before you decide anything.' },
-  { q: 'What do you need from me?', a: 'Your business name and a link to your website. We use the photos, logo and colors that are already there.' },
-  { q: 'Do I need a website?', a: 'No. A social page or a few photos is enough.' },
+  { q: 'What do you need from me?', a: 'Your business name and whatever you have: a website, an Instagram or Facebook page, some photos or short phone clips.' },
+  { q: 'Do I need a website?', a: 'No. A social page, a few photos or some phone clips are enough.' },
+  { q: 'Are the videos only vertical?', a: 'No. We make vertical videos for Reels, Stories and TikTok, square ones for feed posts, and wide ones for YouTube or your website.' },
   { q: 'Do I need to film anything?', a: 'No. We work with what you already have.' },
   { q: 'Do I need to learn any software?', a: 'No. Pixelayers is a service, not an app. Our team handles everything for you.' },
   { q: 'What happens after the preview?', a: 'If you love it, pick a plan in the chat and we send the full version without the watermark. Your plan includes 10 ready-to-post videos every month.' },

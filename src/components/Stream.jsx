@@ -31,7 +31,8 @@ export default function Stream({ className = '', dark = false, density = 1, fly 
     });
 
     let W = 0, H = 0, dpr = 1, lanesN = 0, tiles = [];
-    const pick = (t) => { t.vid = (Math.random() * IDS.length) | 0; t.img = t.vid * 5 + ((Math.random() * 5) | 0); };
+    const RATIOS = [16 / 9, 16 / 9, 1, 9 / 16, 5 / 4]; // height / width: vertical, square, wide, portrait
+    const pick = (t) => { t.vid = (Math.random() * IDS.length) | 0; t.img = t.vid * 5 + ((Math.random() * 5) | 0); t.ar = RATIOS[(Math.random() * RATIOS.length) | 0]; };
     const build = (lanes, perLane) => {
       tiles = [];
       for (let l = 0; l < lanes; l++) {
@@ -89,7 +90,7 @@ export default function Stream({ className = '', dark = false, density = 1, fly 
         const ang = t.a + (FAR - t.z) * 0.06;
         const sx = cx + (Math.cos(ang) * t.r * f) / t.z;
         const sy = cy + (Math.sin(ang) * t.r * f * (narrow ? 1.5 : 0.7)) / t.z;
-        const w = (0.22 * f) / t.z, h = (w * 16) / 9;
+        const size = (0.29 * f) / t.z, w = size / Math.sqrt(t.ar), h = size * Math.sqrt(t.ar);
         if (sx + w < 0 || sx - w > W || sy + h < 0 || sy - h > H) continue;
 
         const born = Math.min(1, (FAR - t.z) / 2.4);
@@ -116,7 +117,9 @@ export default function Stream({ className = '', dark = false, density = 1, fly 
         }
         ctx.save();
         ctx.beginPath(); ctx.roundRect(x, top, w, h, rad); ctx.clip();
-        ctx.drawImage(src, x, top, w, h);
+        const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
+        const k = Math.max(w / sw, h / sh), cw = w / k, ch = h / k; // cover crop, a little below centre
+        ctx.drawImage(src, (sw - cw) / 2, Math.min(sh - ch, (sh - ch) * 0.6), cw, ch, x, top, w, h);
         ctx.restore();
         ctx.lineWidth = Math.max(1, w * 0.018);
         ctx.strokeStyle = dark ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.95)';

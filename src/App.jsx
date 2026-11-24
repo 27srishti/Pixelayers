@@ -1,6 +1,5 @@
 import Nav from './components/Nav.jsx';
 import Hero from './components/Hero.jsx';
-import WhyVideo from './components/WhyVideo.jsx';
 import Pipeline from './components/Pipeline.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
 import Samples from './components/Samples.jsx';
@@ -17,9 +16,8 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <WhyVideo />
-        <Pipeline />
         <HowItWorks />
+        <Pipeline />
         <Samples />
         <Pricing />
         <Faq />

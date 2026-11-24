@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { KEEP_IT, PRICING } from '../content.js';
+import { PRICING } from '../content.js';
 import { passProgress, reduced, useCountTo, useScrollFrame } from '../hooks.js';
 import { Check, Parallax, SendMessage, Tag } from './ui.jsx';
 
@@ -38,11 +38,11 @@ export default function Pricing() {
         <div className="gutter wrap py-20 sm:py-28">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
             <div className="flex flex-col items-start gap-6">
-              <Tag className="reveal border-ink/15">{KEEP_IT.label}</Tag>
-              <h2 className="h2 reveal">Love it? <span className="text-ink/45">Get the full version.</span></h2>
+              <Tag className="reveal border-ink/15">Pricing</Tag>
+              <h2 className="h2 reveal">Simple pricing, <span className="text-ink/45">from $30.</span></h2>
             </div>
             <div className="flex flex-col items-start justify-end gap-6">
-              <p className="lede reveal max-w-md !text-ink/75">{KEEP_IT.text} Plans start at $30 for your first month.</p>
+              <p className="lede reveal max-w-md !text-ink/75">Pick a plan in the chat and we send your videos without the watermark. One plan: 10 ready-to-post videos every month.</p>
               <div className="reveal relative grid grid-cols-2 rounded-full bg-white/70 p-1 backdrop-blur" role="tablist" aria-label="Video length">
                 <span aria-hidden="true" className="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ transform: length === '60' ? 'translateX(100%)' : 'none' }} />
                 {PRICING.lengths.map((l) => (

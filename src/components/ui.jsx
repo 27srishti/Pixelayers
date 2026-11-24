@@ -73,7 +73,7 @@ export function Parallax({ speed = 0.1, axis = 'y', as: Tag = 'div', className =
 }
 
 /** A 9:16 video. Plays (muted, looping) only while on screen. */
-export function Reel({ id, label, className = '', play = true, rounded = 'rounded-[1.5rem]' }) {
+export function Reel({ id, label, className = '', play = true, rounded = 'rounded-[1.5rem]', pos }) {
   const [ref, inView] = useInView({ threshold: 0.15 });
   const video = useRef(null);
   useEffect(() => {
@@ -85,7 +85,7 @@ export function Reel({ id, label, className = '', play = true, rounded = 'rounde
   return (
     <div ref={ref} className={`reel relative aspect-[9/16] overflow-hidden ${rounded} ${className}`}>
       <video ref={video} className="absolute inset-0 h-full w-full object-cover" src={`${media(`${id}.mp4`)}#t=2.5`} poster={still(id)}
-        muted loop playsInline preload="metadata" aria-label={label} />
+        muted loop playsInline preload="metadata" aria-label={label} style={pos ? { objectPosition: pos } : undefined} />
     </div>
   );
 }
